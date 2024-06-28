@@ -1,0 +1,28 @@
+# graphs
+
+```elixir
+Mix.install([
+  {:kino_vega_lite, "~> 0.1.11"},
+  {:vega_lite, "~> 0.1.9"},
+  {:nx, "~> 0.7.2"},
+  {:axon, "~> 0.6.1"}
+])
+```
+
+## Section
+
+```elixir
+alias VegaLite, as: Vl
+y = fn x -> Axon.Activations.softplus(x) |> Nx.tanh() |> Nx.to_number() end
+data = for x <- -100..200, do: %{"x" => x / 10, "y" => y.(x / 10)}
+```
+
+<!-- livebook:{"attrs":"eyJjaGFydF90aXRsZSI6ImdyYXBoIiwiaGVpZ2h0Ijo0MDAsImxheWVycyI6W3siYWN0aXZlIjp0cnVlLCJjaGFydF90eXBlIjoibGluZSIsImNvbG9yX2ZpZWxkIjpudWxsLCJjb2xvcl9maWVsZF9hZ2dyZWdhdGUiOm51bGwsImNvbG9yX2ZpZWxkX2JpbiI6bnVsbCwiY29sb3JfZmllbGRfc2NhbGVfc2NoZW1lIjpudWxsLCJjb2xvcl9maWVsZF90eXBlIjpudWxsLCJkYXRhX3ZhcmlhYmxlIjoiZGF0YSIsImdlb2RhdGFfY29sb3IiOiJibHVlIiwibGF0aXR1ZGVfZmllbGQiOm51bGwsImxvbmdpdHVkZV9maWVsZCI6bnVsbCwieF9maWVsZCI6IngiLCJ4X2ZpZWxkX2FnZ3JlZ2F0ZSI6bnVsbCwieF9maWVsZF9iaW4iOm51bGwsInhfZmllbGRfc2NhbGVfdHlwZSI6bnVsbCwieF9maWVsZF90eXBlIjoicXVhbnRpdGF0aXZlIiwieV9maWVsZCI6InkiLCJ5X2ZpZWxkX2FnZ3JlZ2F0ZSI6bnVsbCwieV9maWVsZF9iaW4iOm51bGwsInlfZmllbGRfc2NhbGVfdHlwZSI6bnVsbCwieV9maWVsZF90eXBlIjoicXVhbnRpdGF0aXZlIn1dLCJ2bF9hbGlhcyI6IkVsaXhpci5WbCIsIndpZHRoIjo0MDB9","chunks":null,"kind":"Elixir.KinoVegaLite.ChartCell","livebook_object":"smart_cell"} -->
+
+```elixir
+Vl.new(width: 400, height: 400, title: "graph")
+|> Vl.data_from_values(data, only: ["x", "y"])
+|> Vl.mark(:line)
+|> Vl.encode_field(:x, "x", type: :quantitative)
+|> Vl.encode_field(:y, "y", type: :quantitative)
+```

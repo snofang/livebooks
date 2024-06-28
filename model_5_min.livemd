@@ -1,0 +1,91 @@
+# Train Neural Net in 5 min
+
+```elixir
+Mix.install([
+  {:axon, "~> 0.6.1"},
+  {:nx, "~> 0.7.2"},
+  {:exla, "~> 0.7.2"},
+  {:scidata, "~> 0.1.11"},
+  {:kino, "~> 0.12.3"}
+])
+```
+
+## The Data
+
+```elixir
+{images, lables} = Scidata.MNIST.download()
+```
+
+```elixir
+{images_data, images_type, images_shape} = images
+
+images_tensor =
+  images_data
+  |> Nx.from_binary(images_type)
+  # |> Nx.reshape(images_shape)
+  |> Nx.divide(256)
+  |> Nx.reshape({60000, :auto})
+```
+
+```elixir
+{labels_data, labels_type, labels_shape} = lables
+
+labels_tensor =
+  labels_data
+  |> Nx.from_binary(labels_type)
+  |> Nx.reshape(labels_shape)
+  |> Nx.new_axis(-1)
+
+# |> Nx.reshape({60_000, :auto})
+```
+
+## The Model
+
+```elixir
+model =
+  Axon.input("features", shape: {nil, 784})
+  |> Axon.dense(128)
+  |> Axon.relu()
+  |> Axon.dense(10)
+  |> Axon.softmax(name: "labels")
+```
+
+```elixir
+Axon.Display.as_graph(model, Nx.template({1, 784}, :f32))
+```
+
+## Training
+
+```elixir
+images_train_data = Nx.to_batched(images_tensor, 32)
+labels_train_data = Nx.to_batched(labels_tensor, 32)
+```
+
+```elixir
+train_data = Stream.zip(images_train_data, labels_train_data)
+```
+
+```elixir
+Enum.take(train_data, 1)
+```
+
+<!-- livebook:{"branch_parent_index":2} -->
+
+## Sparse Representation
+
+Where each column represents whether or not that column index is activated.
+
+```elixir
+train_data =
+  Enum.map(train_data, fn {images_tensor, labels_tensor} ->
+    {images_tensor, Nx.equal(labels_tensor, Nx.iota({10}))}
+  end)
+```
+
+<!-- livebook:{"branch_parent_index":2} -->
+
+## Supervised Training Loop
+
+```elixir
+
+```
